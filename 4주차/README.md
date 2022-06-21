@@ -8,6 +8,7 @@ $ pip3 install django
 ```
 ## 서버 실행
 ```
+$ cd shinHyeYoung/hy
 $ python3 manage.py runserver
 ```
 
