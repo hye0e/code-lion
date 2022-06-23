@@ -24,6 +24,17 @@ INSTALLED_APPS 에 staticapp 추가
 def home(request):
     return render(request, 'home.html')
 ```
+
+## urls.py 설정
+```python
+from staticapp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', views.home, name = 'home')
+]
+
+```
 ## template 추가
 ```
 $ mkdir templates
