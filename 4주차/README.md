@@ -20,7 +20,7 @@ $ python manage.py startapp staticapp
 INSTALLED_APPS 에 staticapp 추가
 ```
 ## views 설정
-```
+```python
 def home(request):
     return render(request, 'home.html')
 ```
@@ -29,11 +29,12 @@ def home(request):
 $ mkdir templates
 home.html 추가
 ```
-## static 추가
+## 최상위 프로젝트에 static 추가
 ```
-# 최상위 프로젝트에 static 추가
 $ mkdir static
+```
 
+```python
 # setting.py 에 설정 추가
 # 최상위 폴더 -> BASE_DIR
 STATICFILES_DIRS = [
@@ -48,7 +49,7 @@ STATICFILES_DIRS = [
 ]
 ```
 ## home.html 에 추가
-```
+```html
 {% load static %}
 
 # head태그 안에 추가
@@ -56,7 +57,8 @@ STATICFILES_DIRS = [
 ```
 
 ## 배포 시엔 static files 를 한 폴더안에 정리한다.
-```
+```python
+# setting.py
 STATIC_ROOT = os.path.join('staticfiles')
 ```
 
