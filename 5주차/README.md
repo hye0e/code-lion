@@ -163,3 +163,57 @@ def formcreate(request):
     <input type="submit" value="새 글 생성하기">
 </form>
 ```
+## model Form 이용하기
+> 1. url 등록하기 
+```python
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', views.home, name = 'home'),
+
+    # html form을 이용해 블로그 객체 만들기
+    path('new/', views.new, name = 'new'),
+    path('create/', views.create, name = 'create'),
+
+    # django form을 이용해 블로그 객체 만들기
+    path('formcreate/'. views.formcreate, name = 'formcreate'),
+
+    # model form을 이용해 블로그 객체 만들기
+    path('modelformcreate/'. views.modelformcreate, name = 'modelformcreate')
+]
+```
+> 2. forms.py 에 class 추가
+```python
+from django import forms
+# model 추가
+from .models import Blog
+
+class BlogModelForm(forms.ModelForm):
+    class Meta:
+        model = Blog
+        # 입력 값
+        # 아래와 같이 입력 하게 된다면 Blog Model에 있는 모든 값들을 field로 받겠다라는 의미
+        # fields = '__all__'
+        # 특정 필드만 입력받고 싶다면,
+        fields = ['title', 'body']
+```
+> 3. view.py 에 함수 추가
+```python
+from django.shortcuts import redirect, render
+from .models import Blog
+from django.utils import timezone
+# BlogModelForm 추가
+from .forms import BlogForm, BlogModelForm
+
+def modelformcreate(request):
+    if request.method == 'POST':
+        # 입력 내용을 DB에 저장
+        form = BlogModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else: 
+        # 입력을 받을 수 있는 html을 갖다주기
+        form = BlogModelForm()
+    # 세번째 인자는 딕셔너리 자료형으로 넘겨주어야함
+    return render(request, 'form_create.html', {'form': form})
+```
