@@ -40,11 +40,11 @@ $ python manage.py createsuperuser
 ```
 
 ## Django에서 사용자 입력을 받는 방법
-> 1. HTML Form 이용하기
+1. HTML Form 이용하기
 2. Django Form 이용하기
 3. Django modelForm 이용하기
-
-## HTML Form 이용하기
+---
+## 1. HTML Form 이용하기
 > 1. url 등록하기 
 ```python
 urlpatterns = [
@@ -79,7 +79,7 @@ def create(request):
     return redirect('home')
 ```
 > 3. html 추가
->> new.html 추가
+new.html 추가
 ```html
 <form action="{% url 'create' %}" method="POST">
     {% csrf_token %}
@@ -94,10 +94,10 @@ def create(request):
     <input type="submit" value="글 생성하기">
 </form>
 ```
->> index.html 추가
+index.html 추가
 <a href = "{% url 'new' %}">새 글 작성</a>
 
-## Django Form 이용하기
+## 2. Django Form 이용하기
 > 1. url 등록하기 
 ```python
 urlpatterns = [
@@ -163,7 +163,7 @@ def formcreate(request):
     <input type="submit" value="새 글 생성하기">
 </form>
 ```
-## model Form 이용하기
+## 3. model Form 이용하기
 > 1. url 등록하기 
 ```python
 urlpatterns = [
