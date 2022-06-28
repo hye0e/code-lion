@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from .models import Blog
 from django.utils import timezone
-from .forms import BlogForm
+from .forms import BlogForm, BlogModelForm
 
 # Create your views here.
 def home(request):
@@ -41,5 +41,18 @@ def formcreate(request):
     else: 
         # 입력을 받을 수 있는 html을 갖다주기
         form = BlogForm()
+    # 세번째 인자는 딕셔너리 자료형으로 넘겨주어야함
+    return render(request, 'form_create.html', {'form': form})
+
+def modelformcreate(request):
+    if request.method == 'POST':
+        # 입력 내용을 DB에 저장
+        form = BlogModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else: 
+        # 입력을 받을 수 있는 html을 갖다주기
+        form = BlogModelForm()
     # 세번째 인자는 딕셔너리 자료형으로 넘겨주어야함
     return render(request, 'form_create.html', {'form': form})
