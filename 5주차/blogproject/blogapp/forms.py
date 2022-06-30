@@ -10,6 +10,6 @@ class BlogModelForm(forms.ModelForm):
         model = Blog
         # 입력 값
         # 아래와 같이 입력 하게 된다면 Blog Model에 있는 모든 값들을 field로 받겠다라는 의미
-        # fields = '__all__'
+        fields = '__all__'
         # 특정 필드만 입력받고 싶다면,
-        fields = ['title', 'body']
+        # fields = ['title', 'body']

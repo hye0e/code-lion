@@ -1,6 +1,13 @@
 <h1>My Simple bolg</h1>
 <!-- 이 공간에는 블로그 글들의 목록을 보여줄 예정 -->
-
+{% for post in posts %}
+    <!-- url 을 눌렀을 때 이동하고 싶은데, detail이라는 문자를 가진 url이야  -->
+    <!-- 추가정보는 세번째인자로  -->
+    <h3 a href ="{% url 'detail' post.id %}">{{ post.title }}</h3>
+    <h4>{{ post.date }}</h4>
+    {{ post.body }}
+{% endfor %}
+<br><br><br>
 <a href = "{% url 'new' %}">html을 이용한 새 글 작성</a><br>
 <a href = "{% url 'formcreate' %}">formcreate 이용한 새 글 작성</a><br>
 <a href = "{% url 'modelformcreate' %}">modelformcreate 이용한 새 글 작성</a>

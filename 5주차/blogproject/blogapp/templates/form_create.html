@@ -1,5 +1,5 @@
 <h1>django form을 이용한 새 글 작성 페이지</h1> 
-<form action="" method="POST">
+<form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <!-- 세번째 인자로 보냈던 form을 찍어줄 수 있음 -->
     <table>

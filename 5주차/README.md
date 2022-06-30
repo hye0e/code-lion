@@ -217,3 +217,162 @@ def modelformcreate(request):
     # 세번째 인자는 딕셔너리 자료형으로 넘겨주어야함
     return render(request, 'form_create.html', {'form': form})
 ```
+## Query Set
+> QuerySet이란? 
+> 데이터베이스로부터 전달받은 객체목록
+> 1. view 에 추가
+```python
+def home(request):
+    # 블로그 글들을 모조리 띄우는 코드
+    # posts = Blog.objects.all()
+    # 정렬도 가능
+    # 오름차순 , 내림차순은 -date
+    posts = Blog.objects.filter().order_by('date')
+    # 딕셔너리 형태로 보내주면, {{ posts }} 로 받아서 사용가능
+    return render(request, 'index.html', {'posts':posts})
+```
+> 2. template 언어를 이용하기
+```html
+{% for post in posts %}
+    <h3>{{ post.title }}</h3>
+    <h4>{{ post.date }}</h4>
+    {{ post.body }}
+    django가 만든 pk {{ post.id }}
+{% endfor %}
+```
+## Detail Page
+> 1. url 에 추가
+```python
+    # Detail
+    # blog_id 라는 변수에 담아서 views.detail 에 넘겨주겠다.
+    path('detail/<int:blog_id>', views.detail, name = 'detail')
+```
+> 2. template 언어를 이용하기
+```html
+{% for post in posts %}
+    <!-- url 을 눌렀을 때 이동하고 싶은데, detail이라는 이름을 가진 url이라는 것을 알려주는 것 -->
+    <!-- 추가정보는 세번째인자로  -->
+    <h3 a href = "{% url 'detail' post.id %}">{{ post.title }}</h3>
+    <h4>{{ post.date }}</h4>
+    {{ post.body }}
+{% endfor %}
+```
+> 3. view 추가
+```python
+# get_object_or_404: pk 값을 이용해 특정 모델 객체만 가져오기
+from django.shortcuts import redirect, render, get_object_or_404
+
+
+```
+> 4. detail.html 추가
+```html
+<h1>제목</h1>
+{{ blog_detail.title }}
+<h2>날짜</h2>
+{{ blog_detail.date }}
+<h3>본문</h3>
+{{ blog_detail.body }}
+```
+
+## Media 업로드
+> 1. setting.py 에 media 관련 경로 추가
+```python
+import os
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media'
+
+```
+
+> 2. url.py 에 media 관련 경로 추가
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+# 방법 1
+urlpatterns = [
+    # media 파일에 접근할 수 있는 url도 추가해주어야함
+] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+
+# 방법 2
+urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+```
+
+> 3. model 에 photo 컬럼 추가
+```python
+from django.db import models
+
+# Create your models here.
+class Blog(models.Model):
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    # setting에 설정된 파일 경로 안에 blog_photo 폴더를 생성하여 그곳에 저장하겠다라는 의미
+    photo = models.ImageField(blank = True, null = True, upload_to = 'blog_photo')
+    # 지금 생성하는 날짜를 저장하겠다는 의미
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+```
+> model 을 추가하였기에 makemigration 해주어야 함
+> ```
+> $ cd blogproject/
+> $ python manage.py makemigrations
+> $ python manage.py migrate
+> ```
+
+> 4. form.py 에 모든 값들을 받을 수 있도록 변경
+```python
+class BlogModelForm(forms.ModelForm):
+    class Meta:
+        model = Blog
+        # 입력 값
+        # 아래와 같이 입력 하게 된다면 Blog Model에 있는 모든 값들을 field로 받겠다라는 의미
+        fields = '__all__'
+```
+
+> 5. 파일을 입력받기 위해 form 태그 변경
+```html
+<h1>django form을 이용한 새 글 작성 페이지</h1> 
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- 세번째 인자로 보냈던 form을 찍어줄 수 있음 -->
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="새 글 생성하기">
+</form>
+```
+
+> 6. view.py 함수 내용 수정
+```python
+def modelformcreate(request):
+    # FILES 전달하는 함수로 수정
+    if request.method == 'POST' or request.method == 'FILES':
+        # 입력 내용을 DB에 저장
+        form = BlogModelForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else: 
+        # 입력을 받을 수 있는 html을 갖다주기
+        form = BlogModelForm()
+    # 세번째 인자는 딕셔너리 자료형으로 넘겨주어야함
+    return render(request, 'form_create.html', {'form': form})
+```
+
+> 7. detail.html에 사진보여주기
+```html
+<h1>제목</h1>
+{{ blog_detail.title }}
+<h2>날짜</h2>
+{{ blog_detail.date }}
+<h3>본문</h3>
+{{ blog_detail.body }}
+
+{% if blog_detail.photo %}
+    <h3>본문</h3>
+    <img src="{{ blog_detail.photo.url }}" alt="" height="500">
+{% endif %}
+```
